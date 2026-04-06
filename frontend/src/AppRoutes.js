@@ -5,11 +5,7 @@ import Layout from './components/Layout';
 import LoadingSpinner from './components/common/LoadingSpinner';
 
 // Pages
-import LandingPage from './pages/LandingPage';
-import LoginPage from './pages/auth/LoginPage';
-import StudentLogin from './pages/auth/StudentLogin';
-import TeacherLogin from './pages/auth/TeacherLogin';
-import AdminLogin from './pages/auth/AdminLogin';
+import UnifiedLogin from './pages/UnifiedLogin';
 
 // Dashboards
 import StudentDashboard from './pages/student/StudentDashboard';
@@ -20,12 +16,16 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import StudentProfile from './pages/student/StudentProfile';
 import StudentViolations from './pages/student/StudentViolations';
 import StudentCertificates from './pages/student/StudentCertificates';
+import ViewTeachers from './pages/student/ViewTeachers';
+import StudentDetail from './pages/student/StudentDetail';
+import ViolationDetail from './pages/student/ViolationDetail';
 
 // Teacher Pages
 import TeacherProfile from './pages/teacher/TeacherProfile';
-import EncodeViolation from './pages/teacher/EncodeViolation';
 import CapstoneManagement from './pages/teacher/CapstoneManagement';
 import AdvisoryStudents from './pages/teacher/AdvisoryStudents';
+import ViewStudents from './pages/teacher/ViewStudents';
+import TeacherDetail from './pages/teacher/TeacherDetail';
 
 // Admin Pages
 import ManageStudents from './pages/admin/ManageStudents';
@@ -83,12 +83,7 @@ const AppRoutes = () => {
   return (
     <Routes>
       {/* Public Routes */}
-      <Route path="/" element={<PublicRoute><LandingPage /></PublicRoute>} />
-      <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
-      <Route path="/login/:portal" element={<PublicRoute><LoginPage /></PublicRoute>} />
-      <Route path="/student/login" element={<PublicRoute><StudentLogin /></PublicRoute>} />
-      <Route path="/teacher/login" element={<PublicRoute><TeacherLogin /></PublicRoute>} />
-      <Route path="/admin/login" element={<PublicRoute><AdminLogin /></PublicRoute>} />
+      <Route path="/" element={<PublicRoute><UnifiedLogin /></PublicRoute>} />
 
       {/* Student Routes */}
       <Route path="/student" element={
@@ -100,6 +95,9 @@ const AppRoutes = () => {
         <Route path="profile" element={<StudentProfile />} />
         <Route path="violations" element={<StudentViolations />} />
         <Route path="certificates" element={<StudentCertificates />} />
+        <Route path="teachers" element={<ViewTeachers />} />
+        <Route path="teacher/:teacherId" element={<TeacherDetail />} />
+        <Route path="violation/:violationId" element={<ViolationDetail />} />
       </Route>
 
       {/* Teacher Routes */}
@@ -110,9 +108,10 @@ const AppRoutes = () => {
       }>
         <Route path="dashboard" element={<TeacherDashboard />} />
         <Route path="profile" element={<TeacherProfile />} />
-        <Route path="encode-violation" element={<EncodeViolation />} />
         <Route path="capstone" element={<CapstoneManagement />} />
         <Route path="advisory" element={<AdvisoryStudents />} />
+        <Route path="students" element={<ViewStudents />} />
+        <Route path="student/:studentId" element={<StudentDetail />} />
       </Route>
 
       {/* Admin Routes */}
@@ -127,9 +126,12 @@ const AppRoutes = () => {
         <Route path="violations" element={<ManageViolations />} />
         <Route path="logs" element={<SystemLogs />} />
         <Route path="users" element={<UserManagement />} />
+        <Route path="student/:studentId" element={<StudentDetail />} />
+        <Route path="teacher/:teacherId" element={<TeacherDetail />} />
+        <Route path="violation/:violationId" element={<ViolationDetail />} />
       </Route>
 
-      {/* Catch all - redirect to landing */}
+      {/* Catch all - redirect to unified login */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

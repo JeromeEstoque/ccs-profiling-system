@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { adminAPI } from '../../services/api';
 import {
   LayoutDashboard,
   Users,
@@ -31,26 +32,51 @@ const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  // Mock data - replace with actual API calls
-  const mockStats = {
-    totalStudents: 1247,
-    totalTeachers: 89,
-    activeCourses: 45,
-    pendingEnrollments: 156,
-    upcomingClasses: 23,
-    recentGrades: 78,
-    attendanceRate: 92.5,
-    averageGPA: 3.4
-  };
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setStats(mockStats);
-      setLoading(false);
-    }, 1000);
+    fetchStatistics();
   }, []);
+
+  const fetchStatistics = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await adminAPI.getStatistics();
+      
+      if (response.data.success) {
+        const data = response.data.statistics;
+        
+        // Transform backend data to match frontend expectations
+        const transformedStats = {
+          totalStudents: data.totalStudents || 0,
+          totalTeachers: data.totalTeachers || 0,
+          activeCourses: data.activeCourses || 0,
+          pendingEnrollments: data.pendingEnrollments || 0,
+          upcomingClasses: data.upcomingClasses || 0,
+          recentGrades: 0, // This needs to be added to backend
+          attendanceRate: data.attendanceRate || 0,
+          averageGPA: data.averageGPA || 0,
+          
+          // Additional stats from backend
+          studentsPerYear: data.studentsPerYear || [],
+          facultyEmployment: data.facultyEmployment || [],
+          violationsSummary: data.violationsSummary || [],
+          capstoneAdvisersAvailable: data.capstoneAdvisersAvailable || 0,
+          recentActivity: data.recentActivity || []
+        };
+        
+        setStats(transformedStats);
+      } else {
+        setError('Failed to load statistics');
+      }
+    } catch (err) {
+      console.error('Error fetching statistics:', err);
+      setError('Failed to load statistics. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -208,77 +234,34 @@ const AdminDashboard = () => {
         />
       </div>
 
-      {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <Card title="Student Enrollment Trends" icon={BarChart3}>
-          <div className="h-80 flex items-center justify-center bg-gray-50 rounded-lg">
-            <div className="text-center">
-              <BarChart3 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600">Chart visualization would be implemented here</p>
-              <p className="text-sm text-gray-500 mt-2">Monthly student enrollment trends</p>
-            </div>
-          </div>
-        </Card>
-
-        <Card title="Attendance Rate" icon={Activity}>
-          <div className="h-80 flex items-center justify-center bg-gray-50 rounded-lg">
-            <div className="text-center">
-              <Activity className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600">Chart visualization would be implemented here</p>
-              <p className="text-sm text-gray-500 mt-2">Daily attendance percentage</p>
-            </div>
-          </div>
-        </Card>
-
-        <Card title="Grade Distribution" icon={PieChart} className="lg:col-span-2">
-          <div className="h-80 flex items-center justify-center bg-gray-50 rounded-lg">
-            <div className="text-center">
-              <PieChart className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600">Chart visualization would be implemented here</p>
-              <p className="text-sm text-gray-500 mt-2">Breakdown of grade ranges</p>
-            </div>
-          </div>
-        </Card>
-      </div>
-
       {/* Recent Activity */}
       <Card title="Recent Activity" icon={Activity}>
         <div className="space-y-4">
-          {[
-            { type: 'student_enrolled', student: 'John Doe', course: 'Computer Science 101', time: '2 hours ago' },
-            { type: 'grade_posted', teacher: 'Prof. Smith', course: 'Mathematics 202', time: '4 hours ago' },
-            { type: 'assignment_submitted', student: 'Jane Smith', course: 'Physics 301', time: '6 hours ago' },
-            { type: 'attendance_marked', teacher: 'Dr. Johnson', course: 'Chemistry 101', time: '1 day ago' },
-          ].map((activity, index) => (
-            <div key={index} className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-              <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                activity.type === 'student_enrolled' ? 'bg-green-100 text-green-600' :
-                activity.type === 'grade_posted' ? 'bg-blue-100 text-blue-600' :
-                activity.type === 'assignment_submitted' ? 'bg-yellow-100 text-yellow-600' :
-                'bg-purple-100 text-purple-600'
-              }`}>
-                {activity.type === 'student_enrolled' ? <Users className="w-5 h-5" /> :
-                 activity.type === 'grade_posted' ? <Award className="w-5 h-5" /> :
-                 activity.type === 'assignment_submitted' ? <FileText className="w-5 h-5" /> :
-                 <UserCheck className="w-5 h-5" />}
+          {stats?.recentActivity?.length > 0 ? (
+            stats.recentActivity.slice(0, 5).map((activity, index) => (
+              <div key={index} className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+                <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-blue-100 text-blue-600">
+                  <Activity className="w-5 h-5" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-medium text-gray-900 capitalize">
+                    {activity.action?.replace(/_/g, ' ') || 'System Activity'}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {activity.username || 'Unknown user'} • {activity.email || ''}
+                  </p>
+                </div>
+                <span className="text-sm text-gray-500">
+                  {new Date(activity.created_at).toLocaleString()}
+                </span>
               </div>
-              <div className="flex-1">
-                <p className="font-medium text-gray-900">
-                  {activity.type === 'student_enrolled' ? 'New Student Enrolled' :
-                   activity.type === 'grade_posted' ? 'Grade Posted' :
-                   activity.type === 'assignment_submitted' ? 'Assignment Submitted' :
-                   'Attendance Marked'}
-                </p>
-                <p className="text-sm text-gray-600">
-                  {activity.type === 'student_enrolled' ? `${activity.student} • ${activity.course}` :
-                   activity.type === 'grade_posted' ? `${activity.teacher} • ${activity.course}` :
-                   activity.type === 'assignment_submitted' ? `${activity.student} • ${activity.course}` :
-                   `${activity.teacher} • ${activity.course}`}
-                </p>
-              </div>
-              <span className="text-sm text-gray-500">{activity.time}</span>
+            ))
+          ) : (
+            <div className="text-center py-8">
+              <Activity className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-600">No recent activity found</p>
             </div>
-          ))}
+          )}
         </div>
       </Card>
     </div>
@@ -287,7 +270,30 @@ const AdminDashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading dashboard data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="bg-red-100 rounded-full p-4 w-16 h-16 mx-auto mb-4">
+            <AlertTriangle className="w-8 h-8 text-red-600" />
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Error Loading Dashboard</h3>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button 
+            onClick={fetchStatistics}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
       </div>
     );
   }

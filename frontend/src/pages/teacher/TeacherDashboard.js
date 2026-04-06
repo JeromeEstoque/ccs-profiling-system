@@ -4,7 +4,7 @@ import { dashboardAPI, teachersAPI } from '../../services/api';
 import Card from '../../components/common/Card';
 import StatCard from '../../components/common/StatCard';
 import EnhancedLoadingSpinner, { CardSkeleton } from '../../components/common/EnhancedLoadingSpinner';
-import { Users, ClipboardList, BookOpen, CheckCircle, User, TrendingUp, Calendar, Award, AlertTriangle } from 'lucide-react';
+import { Users, ClipboardList, BookOpen, CheckCircle, User, TrendingUp, Calendar, Award } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const TeacherDashboard = () => {
@@ -43,14 +43,12 @@ const TeacherDashboard = () => {
       if (dashboardData || teacherData) {
         setStats({
           advisoryCount: dashboardData?.advisoryCount || teacherData?.advisoryStudents?.length || 0,
-          violationsEncoded: dashboardData?.violationsEncoded || 0,
           capstoneRequests: dashboardData?.capstoneRequests || teacherData?.capstoneRequests?.length || 0,
           teachingLoad: teacherData?.teachingLoad || 0,
           isCapstoneAdviser: teacherData?.capstoneAdviserAvailable || false,
           advisorySection: teacherData?.advisorySection || 'N/A',
           department: teacherData?.department || 'College of Computer Studies',
-          position: teacherData?.position || 'Faculty Member',
-          recentViolations: dashboardData?.recentViolations || []
+          position: teacherData?.position || 'Faculty Member'
         });
       } else {
         // Use fallback data
@@ -62,14 +60,12 @@ const TeacherDashboard = () => {
       // Set comprehensive fallback data
       setStats({
         advisoryCount: 0,
-        violationsEncoded: 0,
         capstoneRequests: 0,
         teachingLoad: 0,
         isCapstoneAdviser: false,
         advisorySection: 'N/A',
         department: 'College of Computer Studies',
-        position: 'Faculty Member',
-        recentViolations: []
+        position: 'Faculty Member'
       });
       
       // Only show error toast if it's a network error, not missing data
@@ -179,20 +175,13 @@ const TeacherDashboard = () => {
         </div>
 
         {/* Enhanced Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
           <StatCard
             title="Advisory Students"
             value={stats?.advisoryCount || 0}
             icon={Users}
             color="emerald"
             subtitle="Under supervision"
-          />
-          <StatCard
-            title="Violations Encoded"
-            value={stats?.violationsEncoded || 0}
-            icon={AlertTriangle}
-            color="amber"
-            subtitle="This month"
           />
           <StatCard
             title="Capstone Requests"
@@ -234,7 +223,6 @@ const TeacherDashboard = () => {
             <div className="space-y-4">
               {[
                 { label: 'Total Students', value: stats?.advisoryCount || 0, icon: '👥' },
-                { label: 'Violations Recorded', value: stats?.violationsEncoded || 0, icon: '📝' },
                 { label: 'Capstone Advisees', value: stats?.capstoneRequests || 0, icon: '🎓' },
                 { label: 'Adviser Status', value: stats?.isCapstoneAdviser ? 'Available' : 'Unavailable', icon: '✅' }
               ].map((item, index) => (
@@ -250,34 +238,6 @@ const TeacherDashboard = () => {
           </Card>
         </div>
 
-        <Card title="Recent Violations" icon={AlertTriangle}>
-          {stats?.recentViolations && stats.recentViolations.length > 0 ? (
-            <div className="space-y-3">
-              {stats.recentViolations.map((violation, index) => (
-                <div key={index} className="flex items-center justify-between p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-100 dark:border-red-800">
-                  <div className="flex items-center gap-3">
-                    <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400" />
-                    <div>
-                      <p className="font-medium text-red-900 dark:text-red-100">{violation.studentName || `${violation.first_name} ${violation.last_name}`}</p>
-                      <p className="text-sm text-red-700 dark:text-red-300">{violation.violationType || violation.violation_type}</p>
-                    </div>
-                  </div>
-                  <span className="text-sm text-red-600 dark:text-red-400">{violation.date}</span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center py-8 text-center">
-              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center mb-4">
-                <ClipboardList className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-blue-700 dark:text-blue-300">No Violations Yet</h3>
-                <p className="text-sm text-blue-600 dark:text-blue-400">Start recording student violations</p>
-              </div>
-            </div>
-          )}
-        </Card>
         </div>
       </div>
     </div>

@@ -79,13 +79,13 @@ const Layout = ({ role }) => {
           { path: '/student/profile', icon: User, label: 'My Profile', color: 'text-blue-600' },
           { path: '/student/violations', icon: FileText, label: 'My Violations', color: 'text-orange-600' },
           { path: '/student/certificates', icon: Award, label: 'Certificates', color: 'text-purple-600' },
+          { path: '/student/teachers', icon: Users, label: 'View Teachers', color: 'text-indigo-600' },
         ];
       case 'teacher':
         return [
           { path: '/teacher/dashboard', icon: Home, label: 'Dashboard', color: 'text-green-600' },
           { path: '/teacher/profile', icon: User, label: 'My Profile', color: 'text-blue-600' },
-          { path: '/teacher/advisory', icon: Users, label: 'Advisory Students', color: 'text-indigo-600' },
-          { path: '/teacher/encode-violation', icon: ClipboardList, label: 'Encode Violation', color: 'text-orange-600' },
+          { path: '/teacher/students', icon: GraduationCap, label: 'View Students', color: 'text-teal-600' },
           { path: '/teacher/capstone', icon: BookOpen, label: 'Capstone Management', color: 'text-purple-600' },
         ];
       case 'admin':
@@ -185,7 +185,7 @@ const Layout = ({ role }) => {
       {/* Main Content */}
       <div className={`flex-1 ${sidebarOpen ? 'ml-64' : 'ml-20'} transition-all duration-300`}>
         {/* Header */}
-        <header className="bg-white border-b border-secondary-200 px-6 py-3 sticky top-0 z-20 shadow-sm">
+        <header className="bg-white border-b border-secondary-200 px-6 py-3 sticky top-0 z-20 shadow-sm relative">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-lg font-semibold text-secondary-800">
@@ -205,7 +205,7 @@ const Layout = ({ role }) => {
               <Notifications />
 
               {/* Profile Dropdown */}
-              <div className="relative profile-dropdown">
+              <div className="relative profile-dropdown z-50">
                 <button
                   onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                   className="flex items-center gap-2 p-2 hover:bg-secondary-100 rounded-lg transition-colors"
@@ -223,7 +223,7 @@ const Layout = ({ role }) => {
                 </button>
 
                 {profileDropdownOpen && (
-                  <div className="profile-dropdown absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-secondary-200 py-2 animate-scale-in">
+                  <div className="profile-dropdown fixed right-4 top-16 w-56 bg-white rounded-xl shadow-lg border border-secondary-200 py-2 animate-scale-in z-[100]">
                     <div className="px-4 py-3 border-b border-secondary-100">
                       <p className="font-medium text-secondary-800">
                         {user?.firstName || user?.username}

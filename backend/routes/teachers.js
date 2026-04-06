@@ -4,12 +4,21 @@ const pool = require('../config/database');
 const { authenticateToken, authorizeRoles, checkUserStatus, auditLog } = require('../middleware/auth');
 const { profileUpload } = require('../middleware/upload');
 
-// Get all teachers (Admin only)
-router.get('/', authenticateToken, authorizeRoles('admin'), async (req, res) => {
+// Get all teachers (Admin, Teacher, and Student for viewing)
+router.get('/', authenticateToken, async (req, res) => {
   try {
     const { position, employmentStatus, search } = req.query;
     
-    let query = `
+    // For students and teachers, only allow basic info access
+    const isStudentOrTeacher = req.user.role === 'student' || req.user.role === 'teacher';
+    
+    let query = isStudentOrTeacher ? `
+      SELECT t.id, t.first_name, t.last_name, t.email, t.position, t.employment_status, 
+             t.section_advisory, t.years_of_service, t.courses_handled
+      FROM teachers t
+      JOIN users u ON t.user_id = u.id
+      WHERE 1=1
+    ` : `
       SELECT t.*, u.email as user_email, u.status as user_status, u.last_login
       FROM teachers t
       JOIN users u ON t.user_id = u.id

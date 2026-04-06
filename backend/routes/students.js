@@ -4,17 +4,33 @@ const pool = require('../config/database');
 const { authenticateToken, authorizeRoles, checkUserStatus, auditLog } = require('../middleware/auth');
 const { profileUpload } = require('../middleware/upload');
 
-// Get all students (Admin and Teacher only)
-router.get('/', authenticateToken, authorizeRoles('admin', 'teacher'), async (req, res) => {
+// Get all students (Admin, Teacher, and Student for viewing)
+router.get('/', authenticateToken, async (req, res) => {
   try {
-    const { yearLevel, section, status, search } = req.query;
+    const { yearLevel, section, status, search, skill, skillType } = req.query;
     
-    let query = `
-      SELECT s.*, u.email as user_email, u.status as user_status, u.last_login
+    // For students, only allow basic info access
+    const isStudent = req.user.role === 'student';
+    
+    let query = isStudent ? `
+      SELECT DISTINCT s.id, s.first_name, s.last_name, s.student_id, s.year_level, s.section, s.status_record
       FROM students s
       JOIN users u ON s.user_id = u.id
-      WHERE 1=1
+    ` : `
+      SELECT DISTINCT s.*, u.email as user_email, u.status as user_status, u.last_login
+      FROM students s
+      JOIN users u ON s.user_id = u.id
     `;
+    
+    // Always add JOINs if skill filtering is needed
+    if (skill || skillType) {
+      query += `
+        JOIN student_skills ss ON s.id = ss.student_id
+        JOIN skills sk ON ss.skill_id = sk.id
+      `;
+    }
+    
+    query += ' WHERE 1=1';
     const params = [];
 
     // Use parameterized queries to prevent SQL injection
@@ -35,6 +51,14 @@ router.get('/', authenticateToken, authorizeRoles('admin', 'teacher'), async (re
       const searchPattern = `%${search}%`;
       params.push(searchPattern, searchPattern, searchPattern);
     }
+    if (skill) {
+      query += ' AND sk.name = ?';
+      params.push(skill);
+    }
+    if (skillType) {
+      query += ' AND sk.type = ?';
+      params.push(skillType);
+    }
 
     query += ' ORDER BY s.last_name, s.first_name';
 
@@ -44,9 +68,7 @@ router.get('/', authenticateToken, authorizeRoles('admin', 'teacher'), async (re
   } catch (error) {
     console.error('Get students error:', {
       message: error.message,
-      stack: error.stack,
-      query: query,
-      params: params
+      stack: error.stack
     });
     res.status(500).json({ 
       success: false, 
