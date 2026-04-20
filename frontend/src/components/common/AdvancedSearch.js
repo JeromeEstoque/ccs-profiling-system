@@ -53,14 +53,11 @@ const AdvancedSearch = ({
         return (
           <div key={key} className="flex-1 min-w-[150px]">
             <label className="label">{label}</label>
-            <div className="relative">
-              {Icon && (
-                <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary-400" />
-              )}
+            <div>
               <select
                 value={value}
                 onChange={(e) => handleFilterChange(key, e.target.value)}
-                className={`input-field ${Icon ? 'pl-10' : ''}`}
+                className="input-field"
               >
                 <option value="">All {label}</option>
                 {options?.map((option) => (
@@ -77,15 +74,12 @@ const AdvancedSearch = ({
         return (
           <div key={key} className="flex-1 min-w-[150px]">
             <label className="label">{label}</label>
-            <div className="relative">
-              {Icon && (
-                <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary-400" />
-              )}
+            <div>
               <input
                 type="date"
                 value={value}
                 onChange={(e) => handleFilterChange(key, e.target.value)}
-                className={`input-field ${Icon ? 'pl-10' : ''}`}
+                className="input-field"
               />
             </div>
           </div>
@@ -96,16 +90,13 @@ const AdvancedSearch = ({
           <div key={key} className="flex-1 min-w-[200px]">
             <label className="label">{label}</label>
             <div className="flex gap-2">
-              <div className="relative flex-1">
-                {Icon && (
-                  <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary-400" />
-                )}
+              <div className="flex-1">
                 <input
                   type="date"
                   value={value.from || ''}
                   onChange={(e) => handleFilterChange(key, { ...value, from: e.target.value })}
                   placeholder="From"
-                  className={`input-field ${Icon ? 'pl-10' : ''}`}
+                  className="input-field"
                 />
               </div>
               <div className="relative flex-1">
@@ -126,16 +117,13 @@ const AdvancedSearch = ({
         return (
           <div key={key} className="flex-1 min-w-[150px]">
             <label className="label">{label}</label>
-            <div className="relative">
-              {Icon && (
-                <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary-400" />
-              )}
+            <div>
               <input
                 type="text"
                 value={value}
                 onChange={(e) => handleFilterChange(key, e.target.value)}
                 placeholder={fieldPlaceholder || `Search ${label}`}
-                className={`input-field ${Icon ? 'pl-10' : ''}`}
+                className="input-field"
               />
             </div>
           </div>
@@ -147,15 +135,14 @@ const AdvancedSearch = ({
     <div className={`space-y-4 ${className}`}>
       {/* Main Search Bar */}
       <div className="flex gap-2">
-        <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-secondary-400" />
+        <div className="flex-1">
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSearch(e)}
             placeholder={placeholder}
-            className="input-field pl-10 pr-10"
+            className="input-field pr-10"
           />
           {searchTerm && (
             <button

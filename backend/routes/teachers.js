@@ -14,7 +14,8 @@ router.get('/', authenticateToken, async (req, res) => {
     
     let query = isStudentOrTeacher ? `
       SELECT t.id, t.first_name, t.last_name, t.email, t.position, t.employment_status, 
-             t.section_advisory, t.years_of_service, t.courses_handled
+             t.section_advisory, t.years_of_service, t.courses_handled,
+             t.capstone_adviser_available, t.capstone_schedule
       FROM teachers t
       JOIN users u ON t.user_id = u.id
       WHERE 1=1
@@ -274,10 +275,10 @@ router.put('/:id', authenticateToken, checkUserStatus, auditLog('UPDATE_TEACHER'
     if (lastName) { updates.push('last_name = ?'); values.push(lastName); }
     if (gender) { updates.push('gender = ?'); values.push(gender); }
     if (email) { updates.push('email = ?'); values.push(email); }
-    if (sectionAdvisory !== undefined) { updates.push('section_advisory = ?'); values.push(sectionAdvisory); }
+    if (sectionAdvisory !== undefined) { updates.push('advisory_section = ?'); values.push(sectionAdvisory); }
     if (coursesHandled !== undefined) { updates.push('courses_handled = ?'); values.push(coursesHandled); }
     if (organizationDepartment !== undefined) { updates.push('organization_department = ?'); values.push(organizationDepartment); }
-    if (position && req.user.role === 'admin') { updates.push('position = ?'); values.push(position); }
+    if (position) { updates.push('position = ?'); values.push(position); }
     if (yearsOfService !== undefined) { updates.push('years_of_service = ?'); values.push(yearsOfService); }
     if (employmentStatus && req.user.role === 'admin') { updates.push('employment_status = ?'); values.push(employmentStatus); }
     if (degree !== undefined) { updates.push('degree = ?'); values.push(degree); }

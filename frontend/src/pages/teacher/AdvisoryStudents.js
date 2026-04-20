@@ -188,14 +188,13 @@ const AdvisoryStudents = () => {
       <Card>
         <div className="relative max-w-md">
           <label className="label">Search Students</label>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-secondary-400" />
+          <div>
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search by name or student ID..."
-              className="input-field pl-10"
+              className="input-field"
             />
           </div>
         </div>

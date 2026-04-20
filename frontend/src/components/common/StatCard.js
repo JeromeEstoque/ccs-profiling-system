@@ -1,7 +1,9 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
-const StatCard = ({ title, value, icon: Icon, color, trend, trendValue, subtitle }) => {
+const StatCard = ({ title, value, icon: Icon, color, trend, trendValue, subtitle, linkTo }) => {
+  const navigate = useNavigate();
   const getColorClasses = (color) => {
     const colors = {
       primary: {
@@ -62,7 +64,12 @@ const StatCard = ({ title, value, icon: Icon, color, trend, trendValue, subtitle
   const colorClasses = getColorClasses(color);
 
   return (
-    <div className="group relative overflow-hidden rounded-2xl bg-white/95 backdrop-blur-md border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+    <div 
+      className={`group relative overflow-hidden rounded-2xl bg-white/95 backdrop-blur-md border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${
+        linkTo ? 'cursor-pointer' : ''
+      }`}
+      onClick={() => linkTo && navigate(linkTo)}
+    >
       {/* Background decoration */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 via-blue-50/50 to-indigo-50/50 rounded-2xl"></div>
       <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br opacity-15 rounded-full blur-2xl group-hover:opacity-20 transition-opacity"

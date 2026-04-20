@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { teachersAPI } from '../../services/api';
 import Card from '../../components/common/Card';
-import { User, Mail, Briefcase, Building, Award, Calendar, ArrowLeft, Loader2 } from 'lucide-react';
+import { User, Mail, Briefcase, Building, Award, Calendar, ArrowLeft, Loader2, Clock } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const TeacherDetail = () => {
@@ -185,6 +185,36 @@ const TeacherDetail = () => {
                 <p className="text-gray-900 font-medium">{teacher.university || 'N/A'}</p>
               </div>
             </div>
+          </div>
+        </Card>
+
+        {/* Capstone Advising */}
+        <Card title="Capstone Advising" icon={Award} className="mb-6">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className={`w-3 h-3 rounded-full ${teacher.capstone_adviser_available ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+              <span className="font-medium">
+                {teacher.capstone_adviser_available ? 'Available for Capstone Advising' : 'Not Available for Capstone Advising'}
+              </span>
+            </div>
+            
+            {teacher.capstone_adviser_available && teacher.capstone_schedule && (
+              <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-200">
+                <div className="flex items-center gap-2 mb-2">
+                  <Clock className="w-5 h-5 text-emerald-600" />
+                  <h4 className="font-medium text-emerald-900">Available Schedule</h4>
+                </div>
+                <p className="text-emerald-800">{teacher.capstone_schedule}</p>
+              </div>
+            )}
+            
+            {teacher.capstone_adviser_available && !teacher.capstone_schedule && (
+              <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                <p className="text-yellow-800 text-sm">
+                  Available for capstone advising but schedule not specified. Please contact the teacher directly for scheduling.
+                </p>
+              </div>
+            )}
           </div>
         </Card>
 

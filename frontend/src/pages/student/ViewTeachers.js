@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { teachersAPI } from '../../services/api';
 import Card from '../../components/common/Card';
-import { Search, Users, User, Mail, Briefcase, Eye, Loader2, Building, Filter, X } from 'lucide-react';
+import { Search, Users, User, Mail, Briefcase, Eye, Loader2, Building, Filter, X, Calendar, Award } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const ViewTeachers = () => {
@@ -113,14 +113,13 @@ const ViewTeachers = () => {
           <div className="space-y-4">
             {/* Search Input */}
             <form onSubmit={handleSearch} className="flex gap-4">
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <div className="flex-1">
                 <input
                   type="text"
                   placeholder="Search by name, email, or department..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 />
               </div>
               <button
@@ -251,6 +250,18 @@ const ViewTeachers = () => {
                     <Building className="w-4 h-4 text-gray-400" />
                     <span className="text-gray-600">{teacher.section_advisory || 'No advisory'}</span>
                   </div>
+                  {teacher.capstone_adviser_available && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <Award className="w-4 h-4 text-green-500" />
+                      <span className="text-green-600 font-medium">Capstone Adviser Available</span>
+                    </div>
+                  )}
+                  {teacher.capstone_adviser_available && teacher.capstone_schedule && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <Calendar className="w-4 h-4 text-blue-500" />
+                      <span className="text-blue-600">{teacher.capstone_schedule}</span>
+                    </div>
+                  )}
                   <div className="flex gap-2 flex-wrap">
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${getEmploymentStatusColor(teacher.employment_status)}`}>
                       {teacher.employment_status}
@@ -258,6 +269,11 @@ const ViewTeachers = () => {
                     <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
                       {teacher.years_of_service || 0} years
                     </span>
+                    {teacher.capstone_adviser_available && (
+                      <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                        Capstone Adviser
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -319,6 +335,12 @@ const ViewTeachers = () => {
                     <label className="text-sm font-medium text-gray-500">Employment Status</label>
                     <p className="text-gray-900">{selectedTeacher.employment_status}</p>
                   </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Capstone Advising</label>
+                    <p className="text-gray-900">
+                      {selectedTeacher.capstone_adviser_available ? 'Available' : 'Not Available'}
+                    </p>
+                  </div>
                 </div>
                 
                 <div className="space-y-3">
@@ -334,6 +356,12 @@ const ViewTeachers = () => {
                     <label className="text-sm font-medium text-gray-500">Courses Handled</label>
                     <p className="text-gray-900">{selectedTeacher.courses_handled || 'N/A'}</p>
                   </div>
+                  {selectedTeacher.capstone_adviser_available && selectedTeacher.capstone_schedule && (
+                    <div>
+                      <label className="text-sm font-medium text-gray-500">Capstone Schedule</label>
+                      <p className="text-gray-900">{selectedTeacher.capstone_schedule}</p>
+                    </div>
+                  )}
                 </div>
               </div>
 

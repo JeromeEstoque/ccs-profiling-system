@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { studentsAPI, teachersAPI, violationsAPI } from '../services/api';
 
-// Initial state
+// Global State Initial state
 const initialState = {
   students: {
     data: [],
