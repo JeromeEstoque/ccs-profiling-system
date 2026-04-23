@@ -121,14 +121,13 @@ const UserManagement = () => {
         <div className="flex flex-wrap gap-4 items-end">
           <div className="flex-1 min-w-[200px]">
             <label className="label">Search Users</label>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-secondary-400" />
+            <div>
               <input
                 type="text"
                 value={filters.search}
                 onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
                 placeholder="Search by name or email..."
-                className="input-field pl-10"
+                className="input-field"
               />
             </div>
           </div>

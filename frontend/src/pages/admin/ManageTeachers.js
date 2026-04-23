@@ -163,14 +163,13 @@ const ManageTeachers = () => {
         <form onSubmit={handleSearch} className="flex flex-wrap gap-4 items-end">
           <div className="flex-1 min-w-[200px] relative">
             <label className="label">Search Teachers</label>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-secondary-400" />
+            <div>
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search by name or email..."
-                className="input-field pl-10"
+                className="input-field"
               />
             </div>
           </div>

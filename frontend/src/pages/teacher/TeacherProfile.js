@@ -17,6 +17,7 @@ const TeacherProfile = () => {
   const [skills, setSkills] = useState([]);
   const [newSkill, setNewSkill] = useState('');
   const [editingSkillId, setEditingSkillId] = useState(null);
+  const [savingSchedule, setSavingSchedule] = useState(false);
 
   useEffect(() => {
     fetchProfile();
@@ -26,8 +27,14 @@ const TeacherProfile = () => {
     try {
       const response = await teachersAPI.getByUserId(user.id);
       if (response.data && response.data.success) {
-        setProfile(response.data.teacher);
-        setFormData(response.data.teacher);
+        const teacherData = response.data.teacher;
+        setProfile(teacherData);
+        
+        // Ensure form data includes all necessary fields, especially capstone_schedule
+        setFormData({
+          ...teacherData,
+          capstone_schedule: teacherData.capstone_schedule || ''
+        });
       } else {
         // Set fallback data to prevent crashes
         const fallbackData = {
@@ -37,7 +44,7 @@ const TeacherProfile = () => {
           contact_number: '+1234567890',
           department: 'College of Computer Studies',
           specialization: 'Software Engineering',
-          is_capstone_adviser: true,
+          capstone_adviser_available: true,
           capstone_schedule: 'MWF 10:00-11:00 AM',
           expertise: ['React', 'Node.js', 'Database Design'],
           profile_picture: null
@@ -57,8 +64,8 @@ const TeacherProfile = () => {
         contact_number: 'N/A',
         department: 'N/A',
         specialization: 'N/A',
-        is_capstone_adviser: false,
-        capstone_schedule: 'N/A',
+        capstone_adviser_available: false,
+        capstone_schedule: '',
         expertise: [],
         profile_picture: null
       };
@@ -197,7 +204,18 @@ const TeacherProfile = () => {
     e.preventDefault();
     setSaving(true);
     try {
+      // Update general profile information
       await teachersAPI.update(profile.id, formData);
+      
+      // If capstone availability is enabled, also update the schedule separately
+      if (profile?.capstone_adviser_available && formData.capstone_schedule !== profile.capstone_schedule) {
+        await teachersAPI.toggleCapstoneAvailability(
+          profile.id,
+          true,
+          formData.capstone_schedule
+        );
+      }
+      
       await saveSkillsToProfile(); // Also save skills
       toast.success('Profile updated successfully');
       setEditMode(false);
@@ -211,15 +229,37 @@ const TeacherProfile = () => {
 
   const toggleCapstoneAvailability = async () => {
     try {
+      const newAvailability = !profile.capstone_adviser_available;
+      const currentSchedule = profile.capstone_schedule || formData.capstone_schedule || '';
+      
       await teachersAPI.toggleCapstoneAvailability(
         profile.id, 
-        !profile.capstone_adviser_available,
-        formData.capstone_schedule
+        newAvailability,
+        currentSchedule
       );
       toast.success('Capstone availability updated');
       fetchProfile();
     } catch (error) {
       toast.error('Failed to update availability');
+    }
+  };
+
+  const saveCapstoneSchedule = async () => {
+    if (!profile?.capstone_adviser_available) return;
+    
+    setSavingSchedule(true);
+    try {
+      await teachersAPI.toggleCapstoneAvailability(
+        profile.id,
+        true,
+        formData.capstone_schedule || ''
+      );
+      toast.success('Schedule updated successfully');
+      fetchProfile(); // Refresh to show updated data
+    } catch (error) {
+      toast.error('Failed to update schedule');
+    } finally {
+      setSavingSchedule(false);
     }
   };
 
@@ -571,15 +611,37 @@ const TeacherProfile = () => {
               {profile?.capstone_adviser_available && (
                 <div>
                   <label className="label">Available Schedule</label>
-                  <textarea
-                    name="capstone_schedule"
-                    value={formData.capstone_schedule || ''}
-                    onChange={handleChange}
-                    disabled={!editMode}
-                    rows={2}
-                    placeholder="e.g., Mon-Fri 2PM-5PM"
-                    className="input-field disabled:bg-secondary-50 disabled:text-secondary-600"
-                  />
+                  <div className="space-y-2">
+                    <textarea
+                      name="capstone_schedule"
+                      value={formData.capstone_schedule || ''}
+                      onChange={handleChange}
+                      disabled={!editMode}
+                      rows={2}
+                      placeholder="e.g., Mon-Fri 2PM-5PM"
+                      className="input-field disabled:bg-secondary-50 disabled:text-secondary-600"
+                    />
+                    {editMode && (
+                      <button
+                        type="button"
+                        onClick={saveCapstoneSchedule}
+                        disabled={savingSchedule}
+                        className="w-full px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-lg transition-colors flex items-center justify-center gap-2"
+                      >
+                        {savingSchedule ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Saving Schedule...
+                          </>
+                        ) : (
+                          <>
+                            <Save className="w-4 h-4" />
+                            Save Schedule
+                          </>
+                        )}
+                      </button>
+                    )}
+                  </div>
                 </div>
               )}
             </div>

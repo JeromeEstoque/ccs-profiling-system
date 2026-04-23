@@ -64,14 +64,13 @@ const SystemLogs = () => {
         <div className="flex flex-wrap gap-4 items-end">
           <div className="flex-1 min-w-[200px]">
             <label className="label">Filter by Action</label>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-secondary-400" />
+            <div>
               <input
                 type="text"
                 value={filters.action}
                 onChange={(e) => setFilters(prev => ({ ...prev, action: e.target.value }))}
                 placeholder="Search actions..."
-                className="input-field pl-10"
+                className="input-field"
               />
             </div>
           </div>

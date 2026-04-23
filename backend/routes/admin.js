@@ -21,6 +21,11 @@ router.get('/statistics', async (req, res) => {
       'SELECT COUNT(*) as count FROM teachers'
     );
 
+    // Total system users
+    const [userCount] = await pool.query(
+      'SELECT COUNT(*) as count FROM users'
+    );
+
     // Active courses (using available data - count teachers with courses_handled)
     const [activeCourses] = await pool.query(
       'SELECT COUNT(*) as count FROM teachers WHERE courses_handled IS NOT NULL AND courses_handled != ""'
@@ -90,6 +95,7 @@ router.get('/statistics', async (req, res) => {
       statistics: {
         totalStudents: studentCount[0].count,
         totalTeachers: teacherCount[0].count,
+        totalSystemUsers: userCount[0].count,
         activeCourses: activeCourses[0].count || 0,
         pendingEnrollments: pendingEnrollments[0].count || 0,
         upcomingClasses: upcomingClasses[0].count || 0,

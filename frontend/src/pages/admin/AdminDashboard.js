@@ -51,6 +51,7 @@ const AdminDashboard = () => {
         const transformedStats = {
           totalStudents: data.totalStudents || 0,
           totalTeachers: data.totalTeachers || 0,
+          totalSystemUsers: data.totalSystemUsers || 0,
           activeCourses: data.activeCourses || 0,
           pendingEnrollments: data.pendingEnrollments || 0,
           upcomingClasses: data.upcomingClasses || 0,
@@ -188,14 +189,15 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Enhanced Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Enhanced Stats Cards - Related to Navigation */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           title="Total Students"
           value={stats?.totalStudents?.toLocaleString() || '0'}
           icon={Users}
           color="blue"
           subtitle="Enrolled students"
+          linkTo="/admin/students"
         />
         <StatCard
           title="Total Teachers"
@@ -203,34 +205,23 @@ const AdminDashboard = () => {
           icon={GraduationCap}
           color="emerald"
           subtitle="Active faculty"
+          linkTo="/admin/teachers"
         />
         <StatCard
-          title="Active Courses"
-          value={stats?.activeCourses?.toLocaleString() || '0'}
-          icon={BookOpen}
+          title="Total Violations"
+          value={stats?.violationsSummary?.length?.toLocaleString() || '0'}
+          icon={AlertTriangle}
+          color="red"
+          subtitle="Recorded violations"
+          linkTo="/admin/violations"
+        />
+        <StatCard
+          title="System Users"
+          value={stats?.totalSystemUsers?.toLocaleString() || '0'}
+          icon={Users}
           color="purple"
-          subtitle="This semester"
-        />
-        <StatCard
-          title="Pending Enrollments"
-          value={stats?.pendingEnrollments?.toString() || '0'}
-          icon={FileText}
-          color="amber"
-          subtitle="Awaiting approval"
-        />
-        <StatCard
-          title="Upcoming Classes"
-          value={stats?.upcomingClasses?.toString() || '0'}
-          icon={Calendar}
-          color="violet"
-          subtitle="Next 7 days"
-        />
-        <StatCard
-          title="Average GPA"
-          value={stats?.averageGPA?.toFixed(1) || '0.0'}
-          icon={Award}
-          color="green"
-          subtitle="Academic performance"
+          subtitle="Registered accounts"
+          linkTo="/admin/users"
         />
       </div>
 
