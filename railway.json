@@ -1,11 +1,5 @@
 {
   "build": {
-    "builder": "NIXPACKS",
-    "buildCommand": "cd backend && npm install",
-    "watchPaths": ["backend"]
-  },
-  "deploy": {
-    "startCommand": "cd backend && node server.js",
-    "healthcheckPath": "/api/health"
+    "builder": "NIXPACKS"
   }
 }
