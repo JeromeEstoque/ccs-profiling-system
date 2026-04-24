@@ -8,7 +8,8 @@ import { Toaster } from "react-hot-toast";
 import axios from "axios";
 
 axios.defaults.baseURL =
-  process.env.REACT_APP_API_URL || "https://ccs-management-backend.vercel.app";
+  process.env.REACT_APP_API_URL ||
+  "https://ccs-profiling-system-kp08.onrender.com";
 
 axios.defaults.headers.common["Accept"] = "application/json";
 

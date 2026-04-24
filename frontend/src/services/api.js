@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BACKEND_URL = "https://ccs-management-backend.vercel.app";
+const BACKEND_URL = "https://ccs-profiling-system-kp08.onrender.com";
 
 const API_URL = `${BACKEND_URL}/api`;
 
